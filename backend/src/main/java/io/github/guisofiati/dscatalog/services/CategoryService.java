@@ -1,6 +1,7 @@
 package io.github.guisofiati.dscatalog.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.guisofiati.dscatalog.dto.CategoryDTO;
 import io.github.guisofiati.dscatalog.entities.Category;
 import io.github.guisofiati.dscatalog.repositories.CategoryRepository;
+import io.github.guisofiati.dscatalog.services.exceptions.EntityNotFoundException;
 
 @Service
 public class CategoryService {
@@ -24,5 +26,12 @@ public class CategoryService {
 				.stream()
 				.map(x -> new CategoryDTO(x))
 				.collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public CategoryDTO findById(Long id) {
+		Optional<Category> obj = repository.findById(id);
+		Category entity = obj.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
+		return new CategoryDTO(entity);
 	}
 }
